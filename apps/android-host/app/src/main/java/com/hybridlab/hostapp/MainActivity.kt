@@ -1,5 +1,6 @@
 package com.hybridlab.hostapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -22,6 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hybridlab.hostapp.ui.theme.HostAppTheme
@@ -53,6 +55,7 @@ class MainActivity : ComponentActivity() {
 fun CounterScreen(modifier: Modifier = Modifier) {
     var remembered by remember { mutableIntStateOf(0) }
     var saved by rememberSaveable { mutableIntStateOf(0) }
+    val context = LocalContext.current
     Log.d(TAG, "CounterScreen recomposition")
 
     DisposableEffect(Unit) {
@@ -68,6 +71,11 @@ fun CounterScreen(modifier: Modifier = Modifier) {
         Text("remember: $remembered", style = MaterialTheme.typography.headlineSmall)
         Text("rememberSaveable: $saved", style = MaterialTheme.typography.headlineSmall)
         Button(onClick = { remembered++; saved++ }) { Text("Increment") }
+        Button(onClick = {
+            val intent = Intent(context, DetailActivity::class.java)
+                .putExtra(DetailActivity.EXTRA_COUNT, saved)
+            context.startActivity(intent)
+        }) { Text("Open detail") }
     }
 }
 
