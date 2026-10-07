@@ -1,0 +1,9 @@
+{
+  "name": "hybrid-lab",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "packageManager": "yarn@4.18.1"
+}
