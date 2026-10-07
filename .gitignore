@@ -12,3 +12,6 @@ node_modules/
 xcuserdata/
 DerivedData/
 build/
+
+# Android Studio
+.idea/
