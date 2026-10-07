@@ -18,6 +18,13 @@ struct ContentView: View {
                 NavigationLink("Open UIKit screen") {
                     LifecycleScreen()
                 }
+                NavigationLink("Open RN screen") {
+                    ReactScreen(
+                        moduleName: "HelloScreen",
+                        initialProperties: ["source": "SwiftUI Home (count: \(count))"]
+                    )
+                    .ignoresSafeArea()
+                }
             }
             .navigationTitle("Home")
             .onAppear { print("[Home] onAppear") }

@@ -12,6 +12,8 @@ node_modules/
 xcuserdata/
 DerivedData/
 build/
+.xcode.env.local
+Pods/
 
 # Android Studio
 .idea/
