@@ -37,3 +37,14 @@ struct ReactScreen: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: ReactViewController, context: Context) {}
 }
+
+struct ReactView: UIViewRepresentable {
+    let moduleName: String
+    var initialProperties: [String: Any]? = nil
+
+    func makeUIView(context: Context) -> UIView {
+        ReactNativeRuntime.shared.view(moduleName: moduleName, initialProperties: initialProperties)
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}

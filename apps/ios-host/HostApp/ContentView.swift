@@ -10,6 +10,12 @@ struct ContentView: View {
             VStack(spacing: 16) {
                 Text("Count: \(count)")
                     .font(.title)
+                ReactView(
+                    moduleName: "InlineCard",
+                    initialProperties: ["title": "Card inside SwiftUI"]
+                )
+                .frame(height: 100)
+                .padding(.horizontal)
                 Button("Inmcrement") { count += 1 }
                     .buttonStyle(.borderedProminent)
                 NavigationLink("Open detail") {
