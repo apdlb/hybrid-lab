@@ -1,10 +1,29 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    id("com.facebook.react")
+}
+
+val localProperties = Properties().apply {
+    val localFile = rootProject.file("local.properties")
+    if (localFile.exists()) localFile.inputStream().use { load(it) }
+}
+val nodeBinary: String = localProperties.getProperty("node.binary") ?: "node"
+
+react {
+    root.set(file("../../../packages/rn-app"))
+    reactNativeDir.set(file("../../../node_modules/react-native"))
+    codegenDir.set(file("../../../node_modules/@react-native/codegen"))
+    cliFile.set(file("../../../node_modules/react-native/cli.js"))
+    nodeExecutableAndArgs.set(listOf(nodeBinary))
+    autolinkLibrariesWithApp()
 }
 
 android {
     namespace = "com.hybridlab.hostapp"
+    ndkVersion = "27.1.12297006"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -40,6 +59,8 @@ android {
 }
 
 dependencies {
+    implementation("com.facebook.react:react-android")
+    implementation("com.facebook.react:hermes-android")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
