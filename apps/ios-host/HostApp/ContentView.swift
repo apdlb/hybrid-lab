@@ -12,7 +12,7 @@ struct ContentView: View {
                     .font(.title)
                 ReactView(
                     moduleName: "InlineCard",
-                    initialProperties: ["title": "Card inside SwiftUI"]
+                    properties: ["title": "Card inside SwiftUI (count: \(count))"]
                 )
                 .frame(height: 100)
                 .padding(.horizontal)

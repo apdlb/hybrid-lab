@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import React
 
 final class ReactViewController: UIViewController {
     private let moduleName: String
@@ -40,11 +41,14 @@ struct ReactScreen: UIViewControllerRepresentable {
 
 struct ReactView: UIViewRepresentable {
     let moduleName: String
-    var initialProperties: [String: Any]? = nil
+    var properties: [String: Any]? = nil
 
     func makeUIView(context: Context) -> UIView {
-        ReactNativeRuntime.shared.view(moduleName: moduleName, initialProperties: initialProperties)
+        ReactNativeRuntime.shared.view(moduleName: moduleName, initialProperties: properties)
     }
 
-    func updateUIView(_ uiView: UIView, context: Context) {}
+    func updateUIView(_ uiView: UIView, context: Context) {
+        guard let rootView = uiView as? RCTSurfaceHostingProxyRootView else { return }
+        rootView.appProperties = properties ?? [:]
+    }
 }
