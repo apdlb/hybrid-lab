@@ -76,6 +76,11 @@ fun CounterScreen(modifier: Modifier = Modifier) {
                 .putExtra(DetailActivity.EXTRA_COUNT, saved)
             context.startActivity(intent)
         }) { Text("Open detail") }
+        Button(onClick = {
+            val intent = Intent(context, HelloReactActivity::class.java)
+                .putExtra(HelloReactActivity.EXTRA_SOURCE, "Compose Home (saved: $saved)")
+            context.startActivity(intent)
+        }) { Text("Open RN screen") }
     }
 }
 
