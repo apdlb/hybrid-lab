@@ -225,13 +225,28 @@ Resultado comprobado:
 
 - `MainApplication`: la clase `Application` es lo primero que crea Android, antes de cualquier Activity. Implementa `ReactApplication` y crea el `ReactHost` con `by lazy` (se crea la primera vez que alguien lo pide). `loadReactNative(this)` carga las librerías nativas.
 - `HelloReactActivity`: hereda de `ReactActivity`, que ya sabe mostrar una pantalla de React. `getMainComponentName` dice qué componente. `getLaunchOptions` convierte el extra del Intent en props iniciales. Así **navegamos de Compose a una pantalla de React**.
-- `ReactView` (Compose, en curso): crea una surface con `reactHost.createSurface(...)`, la arranca con `start()`, la muestra con `AndroidView` y la para con `stop()` en `onDispose`. Para actualizar props llama a `updateInitProps`.
+- `ReactView` (Compose): crea una surface con `reactHost.createSurface(...)` dentro de `remember`, para que no se cree en cada render. La arranca con `start()`, la muestra con `AndroidView` y la para con `stop()` en `onDispose`. Cuando cambian las props, el bloque `update` de `AndroidView` llama a `updateInitProps`. Así metemos **un trozo de React dentro de una pantalla Compose** (`InlineCard`).
+
+### El motor necesita saber qué Activity está activa
+
+React Native solo dibuja los cambios en pantalla cuando el `ReactHost` está en estado "resumed". `ReactActivity` avisa al motor por su cuenta. Una Activity nativa normal no lo hace, y tienes que avisarlo tú:
+
+```kotlin
+override fun onResume() { super.onResume(); reactHost.onHostResume(this) }
+override fun onPause() { super.onPause(); reactHost.onHostPause(this) }
+override fun onDestroy() { super.onDestroy(); reactHost.onHostDestroy(this) }
+```
+
+Sin estos avisos, la surface se pinta la primera vez, pero no muestra los cambios posteriores. Un `useState` cambia en JS, pero la pantalla sigue igual.
+
+En iOS no tuvimos que hacer nada parecido, porque la factoría de React Native sigue por sí sola el estado de la app.
 
 Resultado comprobado:
 
 - `HelloScreen` se abre con el valor que manda Compose.
 - El contador de React sobrevive a la rotación gracias a `configChanges`.
 - Al cerrar y abrir de nuevo, el contador vuelve a cero (surface nueva).
+- En `InlineCard`, el título cambia con el contador nativo y los likes se mantienen.
 
 ## 8. Problemas que encontramos y su causa
 
@@ -245,6 +260,7 @@ Resultado comprobado:
 | Gradle rechaza los repositorios del proyecto | `FAIL_ON_PROJECT_REPOS` | Cambiar a `PREFER_SETTINGS` |
 | `java.util.Properties` no se encuentra en el script de Gradle | `java` es también un accesor de Gradle y tapa el paquete | `import java.util.Properties` al principio |
 | `createSurface` no compila | `reactHost` puede ser `null` en la interfaz | Afirmar que no es `null` con `!!` |
+| En Compose, los likes de `InlineCard` no suben | `MainActivity` no avisaba al `ReactHost` de su ciclo de vida | Llamar a `onHostResume`, `onHostPause` y `onHostDestroy` |
 
 ## 9. Glosario
 
@@ -261,7 +277,6 @@ Resultado comprobado:
 
 ## 10. Lo que falta
 
-- [ ] Terminar `InlineCard` dentro de Compose.
 - [ ] Desde React Native, pedir datos al nativo (Turbo Module).
 - [ ] Desde el nativo, emitir eventos a React Native.
 - [ ] Repetir el módulo con Nitro Modules y con Expo Modules, y compararlos.
